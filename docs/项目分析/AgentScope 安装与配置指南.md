@@ -23,12 +23,18 @@ uv venv --python 3.10
 # 激活虚拟环境
 source .venv/bin/activate  # macOS/Linux
 # 或
-.venv\Scripts\activate  # Windows
+source .venv/Scripts/activate # Windows
 ```
 
 ## 3. 安装项目依赖
 
 ### 3.1 安装基本依赖
+
+**为什么使用可编辑模式安装**：
+- **功能**：`-e` 参数表示以可编辑模式安装项目，创建源码的符号链接而非复制
+- **作用**：修改源码后立即生效，无需重新安装，提高开发效率
+- **必要性**：开发过程中需要频繁修改源码时，可编辑模式能确保环境直接使用最新代码
+- **示例依赖**：`examples` 目录下的所有示例代码均依赖 agentscope 包，可编辑模式确保示例能使用本地修改后的代码
 
 使用国内镜像安装基本依赖，避免网络连接问题：
 
@@ -40,6 +46,11 @@ uv pip install -e . --index-url https://mirrors.aliyun.com/pypi/simple/ --truste
 ### 3.2 安装实时功能依赖
 
 如果需要运行实时语音智能体服务，安装实时功能依赖：
+
+**为什么使用 `.[realtime]` 语法**：
+- `realtime` 是在 `pyproject.toml` 中定义的可选依赖组
+- 该依赖组包含 `websockets>=14.0` 和 `scipy` 两个包
+- `.[realtime]` 语法告诉包管理器安装项目的同时，额外安装 `realtime` 依赖组中的所有包
 
 ```bash
 # 安装实时功能依赖
