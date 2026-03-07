@@ -1,5 +1,5 @@
 ```mermaid
-flowchart LR
+flowchart TB
     %% 样式定义（沿用参考风格，保持视觉一致性）
     classDef frameworkStyle fill:#f9f,stroke:#333,stroke-width:2px
     classDef protocolStyle fill:#ffd700,stroke:#333,stroke-width:3px
