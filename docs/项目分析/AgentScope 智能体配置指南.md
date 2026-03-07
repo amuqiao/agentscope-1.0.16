@@ -25,6 +25,111 @@
 - **复杂交互**：当需要更丰富的用户界面时，可以参考以下方式：
   - **内置示例**：如 `realtime_voice_agent` 提供了 Web 界面
   - **自定义前端**：根据你的需求构建前端页面，通过 API 与智能体通信
+  - **AgentScope Studio**：使用官方提供的本地部署 Web 应用，提供项目管理和可视化追踪功能
+
+## 与 AgentScope Studio 搭配使用
+
+AgentScope Studio 是一个本地部署的 Web 应用程序，为智能体应用提供项目管理和可视化追踪功能。
+
+### 1. 安装 AgentScope Studio
+
+使用 npm 安装：
+
+```bash
+npm install -g @agentscope/studio
+```
+
+### 2. 启动 AgentScope Studio
+
+```bash
+as_studio
+```
+
+默认情况下，Studio 会在 `http://localhost:3000` 启动。
+
+### 3. 配置智能体连接到 Studio
+
+在初始化 AgentScope 时，添加 `studio_url` 参数：
+
+```python
+import agentscope
+
+# 初始化并连接到 Studio
+agentscope.init(
+    project="MyProject",
+    name="TestRun",
+    studio_url="http://localhost:3000"
+)
+
+# 后续的智能体创建和运行代码...
+```
+
+### 4. 完整示例
+
+```python
+import asyncio
+from agentscope.agent import ReActAgent
+from agentscope.model import OpenAIChatModel
+from agentscope.memory import InMemoryMemory
+from agentscope.tool import Toolkit
+from agentscope.message import Msg
+import agentscope
+
+async def main():
+    # 初始化并连接到 AgentScope Studio
+    agentscope.init(
+        project="DemoProject",
+        name="ChatAssistant",
+        studio_url="http://localhost:3000"
+    )
+
+    # 创建智能体
+    agent = ReActAgent(
+        name="assistant",
+        sys_prompt="You're a helpful assistant.",
+        model=OpenAIChatModel(
+            model_name="gpt-4",
+            api_key="YOUR_API_KEY",
+        ),
+        memory=InMemoryMemory(),
+        toolkit=Toolkit(),
+    )
+
+    # 运行智能体
+    msg = None
+    while True:
+        msg = await agent(msg)
+        user_input = input("User: ")
+        if user_input == "exit":
+            break
+        msg = Msg("user", user_input, "user")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### 5. 在 Studio 中查看和管理
+
+启动应用后，你可以在 AgentScope Studio 中：
+
+- **项目管理**：查看所有连接的智能体应用
+- **运行状态**：实时查看应用的运行状态和日志
+- **可视化追踪**：查看 token 使用情况、模型调用和详细追踪信息
+- **Friday 智能体**：使用内置的 Friday 智能体获取开发帮助
+
+### 6. 高级配置
+
+你可以同时配置追踪功能，将追踪数据发送到 Studio：
+
+```python
+agentscope.init(
+    project="MyProject",
+    name="TestRun",
+    studio_url="http://localhost:3000",
+    # 自动使用 Studio 的追踪端点
+    # tracing_url 会自动设置为 studio_url + "/v1/traces"
+)
+```
 
 ## 智能体配置步骤
 

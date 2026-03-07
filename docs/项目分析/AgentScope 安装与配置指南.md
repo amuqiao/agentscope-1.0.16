@@ -121,14 +121,79 @@ AgentScope 的模型配置主要通过以下文件实现：
        # Ollama 模型（可选）
        export OLLAMA_BASE_URL="http://localhost:11434"
        ```
-     - 在 Windows 中，通过系统属性设置环境变量。
-   - **临时设置**（仅当前终端有效）：
-     - 在 macOS/Linux 中，直接在终端中运行：
-       ```bash
-       export DASHSCOPE_API_KEY="your-dashscope-api-key"
-       ```
+     - 在 Windows 中：
+      - **通过系统属性设置**：
+        1. 右键点击"此电脑"，选择"属性"
+        2. 点击"高级系统设置"
+        3. 点击"环境变量"按钮
+        4. 在"用户变量"或"系统变量"区域点击"新建"
+        5. 输入变量名：`DASHSCOPE_API_KEY`
+        6. 输入变量值：`your-dashscope-api-key`
+        7. 点击"确定"保存
+      - **通过命令行设置**（需要管理员权限）：
+        - 命令提示符（永久设置）：
+          ```cmd
+          setx DASHSCOPE_API_KEY "your-dashscope-api-key" /m
+          ```
+        - PowerShell（永久设置）：
+          ```powershell
+          [Environment]::SetEnvironmentVariable("DASHSCOPE_API_KEY", "your-dashscope-api-key", "Machine")
+          ```
+  - **临时设置**（仅当前终端有效）：
+    - 在 macOS/Linux 中，直接在终端中运行：
+      ```bash
+      export DASHSCOPE_API_KEY="your-dashscope-api-key"
+      ```
+    - 在 Windows 中：
+      - 命令提示符：
+        ```cmd
+        set DASHSCOPE_API_KEY=your-dashscope-api-key
+        ```
+      - PowerShell：
+        ```powershell
+        $env:DASHSCOPE_API_KEY="your-dashscope-api-key"
+        ```
+    - 在 Git Bash 中：
+      - **方法一：直接设置（临时有效）**：
+        ```bash
+        export DASHSCOPE_API_KEY="your-dashscope-api-key"
+        ```
+      - **方法二：在配置文件中设置（永久有效）**：
+        1. 打开 Git Bash 配置文件：
+           ```bash
+           notepad ~/.bashrc
+           ```
+        2. 在文件末尾添加：
+           ```bash
+           export DASHSCOPE_API_KEY="your-dashscope-api-key"
+           ```
+        3. 保存文件并执行：
+           ```bash
+           source ~/.bashrc
+           ```
 
-2. **使用模型**：
+2. **验证方法**：
+   设置完成后，打开**新的命令行窗口**，执行以下命令验证：
+   - 命令提示符：
+     ```cmd
+     echo %DASHSCOPE_API_KEY%
+     ```
+   - PowerShell：
+     ```powershell
+     echo $env:DASHSCOPE_API_KEY
+     ```
+   - Git Bash：
+     ```bash
+     echo $DASHSCOPE_API_KEY
+     ```
+   如果输出显示API密钥，则说明环境变量已成功设置。
+
+#### 注意事项：
+- **不同终端环境的环境变量是相互独立的**：在PowerShell中设置的环境变量不会自动在Git Bash中生效，反之亦然
+- **系统级环境变量需要重启终端才能生效**：通过系统属性或命令行设置的永久环境变量，需要关闭并重新打开终端窗口才能加载
+- **临时设置的环境变量仅在当前会话有效**：使用`set`（命令提示符）、`$env:`（PowerShell）或`export`（Git Bash）命令设置的环境变量，关闭终端后会自动消失
+
+3. **使用模型**：
    ```python
    from agentscope.model import OpenAIChatModel, DashScopeChatModel
 
