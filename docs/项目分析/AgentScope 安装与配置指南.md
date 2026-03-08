@@ -493,3 +493,143 @@ uv pip install -e ".[full]" --index-url https://mirrors.aliyun.com/pypi/simple/ 
 cd examples/agent/realtime_voice_agent
 python run_server.py
 ```
+
+## 9. 在其他项目中安装和使用 AgentScope
+
+### 9.1 从 PyPI 安装
+
+在其他项目中，您可以通过以下命令从 PyPI 安装 AgentScope：
+
+```bash
+# 使用 pip 安装
+pip install agentscope
+
+# 或使用 uv 安装
+uv pip install agentscope
+```
+
+### 9.2 安装特定功能依赖
+
+根据您的需求，您可以安装特定功能的依赖：
+
+```bash
+# 安装 A2A 功能依赖
+pip install agentscope[a2a]
+
+# 安装实时语音功能依赖
+pip install agentscope[realtime]
+
+# 安装所有模型支持
+pip install agentscope[models]
+
+# 安装 RAG 功能依赖
+pip install agentscope[rag]
+
+# 安装完整依赖
+pip install agentscope[full]
+```
+
+### 9.3 在项目中使用 AgentScope
+
+#### 基本使用示例
+
+```python
+from agentscope.agent import ReActAgent, UserAgent
+from agentscope.model import DashScopeChatModel
+from agentscope.formatter import DashScopeChatFormatter
+from agentscope.memory import InMemoryMemory
+from agentscope.tool import Toolkit, execute_python_code, execute_shell_command
+import os, asyncio
+
+async def main():
+    # 创建工具包
+    toolkit = Toolkit()
+    toolkit.register_tool_function(execute_python_code)
+    toolkit.register_tool_function(execute_shell_command)
+
+    # 创建智能体
+    agent = ReActAgent(
+        name="Friday",
+        sys_prompt="You're a helpful assistant named Friday.",
+        model=DashScopeChatModel(
+            model_name="qwen-max",
+            api_key=os.environ["DASHSCOPE_API_KEY"],
+            stream=True,
+        ),
+        memory=InMemoryMemory(),
+        formatter=DashScopeChatFormatter(),
+        toolkit=toolkit,
+    )
+
+    user = UserAgent(name="user")
+
+    # 开始对话
+    msg = None
+    while True:
+        msg = await agent(msg)
+        msg = await user(msg)
+        if msg.get_text_content() == "exit":
+            break
+
+asyncio.run(main())
+```
+
+#### 配置模型
+
+在其他项目中，您可以使用与本项目相同的配置方法：
+
+1. **通过环境变量配置**：在系统或项目的环境变量中设置模型 API 密钥
+2. **在代码中直接配置**：在代码中直接传递 API 密钥
+3. **使用配置文件**：创建 `config.json` 文件并通过 `agentscope.init()` 加载
+
+#### 启动智能体服务
+
+如果您需要在其他项目中启动类似的智能体服务，您可以参考以下步骤：
+
+1. **安装必要的依赖**：
+   ```bash
+   # 安装实时语音功能依赖
+   pip install agentscope[realtime]
+   
+   # 安装 Web 服务依赖
+   pip install fastapi uvicorn
+   ```
+
+2. **创建服务代码**：参考 `examples/agent/realtime_voice_agent/run_server.py` 的结构，创建您自己的服务代码
+
+3. **启动服务**：
+   ```bash
+   python your_server.py
+   ```
+
+### 9.4 常见问题
+
+#### 依赖冲突
+
+如果遇到依赖冲突问题，建议：
+- 使用虚拟环境隔离项目依赖
+- 明确指定依赖版本
+- 检查并解决版本冲突
+
+#### 模型配置
+
+确保正确配置模型 API 密钥：
+- 检查环境变量是否正确设置
+- 验证 API 密钥的有效性
+- 确保网络连接正常
+
+#### 服务启动失败
+
+如果服务启动失败，检查：
+- 端口是否被占用
+- 依赖是否完整安装
+- 模型配置是否正确
+- 网络连接是否正常
+
+### 9.5 最佳实践
+
+1. **使用虚拟环境**：为每个项目创建独立的虚拟环境，避免依赖冲突
+2. **明确依赖版本**：在 `requirements.txt` 或 `pyproject.toml` 中明确指定 AgentScope 及相关依赖的版本
+3. **模块化设计**：将智能体配置、工具定义等模块化，提高代码可维护性
+4. **错误处理**：添加适当的错误处理，提高服务稳定性
+5. **日志记录**：配置合理的日志记录，便于问题排查
