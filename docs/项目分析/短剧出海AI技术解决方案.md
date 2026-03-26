@@ -8,7 +8,7 @@
 ## 一、业务场景与痛点全景
 
 ```mermaid
-flowchart TB
+flowchart LR
     classDef painStyle   fill:#dc2626,stroke:#991b1b,stroke-width:2px,color:#fff
     classDef sceneStyle  fill:#1d4ed8,stroke:#1e3a8a,stroke-width:2px,color:#fff
     classDef valueStyle  fill:#059669,stroke:#064e3b,stroke-width:2px,color:#fff
